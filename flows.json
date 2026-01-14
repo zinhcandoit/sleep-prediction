@@ -1,0 +1,2463 @@
+[
+    {
+        "id": "442b1e1d0b8a3389",
+        "type": "tab",
+        "label": "23127143",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "dc78b76033f6446e",
+        "type": "ui_form",
+        "z": "442b1e1d0b8a3389",
+        "name": "Log in",
+        "label": "Log In",
+        "group": "362c1159a3d28eb0",
+        "order": 1,
+        "width": 6,
+        "height": "2",
+        "options": [
+            {
+                "label": "Email",
+                "value": "email",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Password",
+                "value": "password",
+                "type": "password",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "email": "",
+            "password": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "",
+        "x": 130,
+        "y": 300,
+        "wires": [
+            [
+                "870dcb55628e77e6",
+                "bd56a91d0ba72dc9"
+            ]
+        ]
+    },
+    {
+        "id": "870dcb55628e77e6",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Save user",
+        "func": "global.set(\"email\", msg.payload.email);\nglobal.set(\"password\", msg.payload.password);",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f8d7bf53e786823f",
+        "type": "comment",
+        "z": "442b1e1d0b8a3389",
+        "name": "Log in",
+        "info": "",
+        "x": 130,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "7a63a63e9929491f",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "authenticate",
+        "func": "var users = msg.payload;\nvar password = global.get(\"password\");\n\nif (!Array.isArray(users) || users.length === 0) {\n    msg.payload = \"N\";   // user không tồn tại\n    return msg;\n}\n\nvar user = users[0];\n\nif (user.password === password) {\n    msg.payload = \"Y\";\n} else {\n    msg.payload = \"N\";   // sai password\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
+        "y": 280,
+        "wires": [
+            [
+                "86d19248441d77e0"
+            ]
+        ]
+    },
+    {
+        "id": "86d19248441d77e0",
+        "type": "switch",
+        "z": "442b1e1d0b8a3389",
+        "name": "check_valid",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Y",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "N",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 790,
+        "y": 280,
+        "wires": [
+            [
+                "0d2e90f3bd7cadd7",
+                "b8e6436425658aaa",
+                "945267a1f177c578"
+            ],
+            [
+                "b62449695cb49a8c"
+            ]
+        ]
+    },
+    {
+        "id": "b8e6436425658aaa",
+        "type": "change",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{   \"tabs\": {     \"show\": [\"Dashboard\", \"Personal\"],     \"hide\": [\"Log in\", \"Sign up\", \"Get Password\"]   },   \"tab\": \"Dashboard\" }",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1000,
+        "y": 280,
+        "wires": [
+            [
+                "01b7930da36ca419"
+            ]
+        ]
+    },
+    {
+        "id": "b62449695cb49a8c",
+        "type": "change",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Log in failed. Please try again",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 940,
+        "y": 340,
+        "wires": [
+            [
+                "6433713644c015bd"
+            ]
+        ]
+    },
+    {
+        "id": "0d2e90f3bd7cadd7",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "process_user_login",
+        "func": "msg.payload = {\n    email: global.get(\"email\"),\n    password: global.get(\"password\")\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 990,
+        "y": 180,
+        "wires": [
+            [
+                "bf27e05a911a76ce"
+            ]
+        ]
+    },
+    {
+        "id": "bf27e05a911a76ce",
+        "type": "debug",
+        "z": "442b1e1d0b8a3389",
+        "name": "test_log_in",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1170,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "6433713644c015bd",
+        "type": "ui_toast",
+        "z": "442b1e1d0b8a3389",
+        "position": "dialog",
+        "displayTime": "3",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 1,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "",
+        "name": "Show dialog",
+        "x": 1190,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "01b7930da36ca419",
+        "type": "ui_ui_control",
+        "z": "442b1e1d0b8a3389",
+        "name": "To Dashboard",
+        "events": "all",
+        "x": 1220,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8d0f7572e620af8a",
+        "type": "ui_button",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "group": "362c1159a3d28eb0",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "label": "To Sign Up",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 150,
+        "y": 160,
+        "wires": [
+            [
+                "fb38c985be78d327"
+            ]
+        ]
+    },
+    {
+        "id": "fb38c985be78d327",
+        "type": "change",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{   \"tabs\": {     \"show\": [\"Sign up\"],     \"hide\": [\"Log in\", \"Dashboard\", \"Get Password\", \"Personal\"]   },   \"tab\": \"Sign up\" }",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 380,
+        "y": 160,
+        "wires": [
+            [
+                "6b13c4d4c1cec69c"
+            ]
+        ]
+    },
+    {
+        "id": "6b13c4d4c1cec69c",
+        "type": "ui_ui_control",
+        "z": "442b1e1d0b8a3389",
+        "name": "To Sign Up",
+        "events": "all",
+        "x": 610,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "16467d7839ac1b6d",
+        "type": "comment",
+        "z": "442b1e1d0b8a3389",
+        "name": "Sign up",
+        "info": "",
+        "x": 130,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "ee91d54ee61fcf19",
+        "type": "ui_form",
+        "z": "442b1e1d0b8a3389",
+        "name": "Sign up",
+        "label": "Sign Up",
+        "group": "d24ed554c9dee777",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "options": [
+            {
+                "label": "Email",
+                "value": "email",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Password",
+                "value": "password_1",
+                "type": "password",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Confirmed_password",
+                "value": "password_2",
+                "type": "password",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "email": "",
+            "password_1": "",
+            "password_2": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "",
+        "x": 140,
+        "y": 540,
+        "wires": [
+            [
+                "977e05eda0d328a5",
+                "d1b9982d705bb9ce"
+            ]
+        ]
+    },
+    {
+        "id": "977e05eda0d328a5",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "check_password_match",
+        "func": "msg.payload = \n(msg.payload.password_1 == msg.payload.password_2) ? \"Y\" : \"N\";\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 520,
+        "wires": [
+            [
+                "6717f5d2841b4097"
+            ]
+        ]
+    },
+    {
+        "id": "6717f5d2841b4097",
+        "type": "switch",
+        "z": "442b1e1d0b8a3389",
+        "name": "check_valid",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Y",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "N",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 670,
+        "y": 520,
+        "wires": [
+            [
+                "c9e40e723d0bb173"
+            ],
+            [
+                "3f968024eaf5b83e"
+            ]
+        ]
+    },
+    {
+        "id": "c9e40e723d0bb173",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "query_user",
+        "func": "msg.payload = {\n    email: global.get(\"email\")\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 460,
+        "wires": [
+            [
+                "b6dfbbad461ca6d6",
+                "72694f05117dff28"
+            ]
+        ]
+    },
+    {
+        "id": "3f968024eaf5b83e",
+        "type": "change",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Something went wrong. Please try again",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 880,
+        "y": 560,
+        "wires": [
+            [
+                "8057b04c81b7e7ac"
+            ]
+        ]
+    },
+    {
+        "id": "8057b04c81b7e7ac",
+        "type": "ui_toast",
+        "z": "442b1e1d0b8a3389",
+        "position": "dialog",
+        "displayTime": "3",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 1,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "",
+        "name": "",
+        "x": 1130,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "802b32addd175efd",
+        "type": "comment",
+        "z": "442b1e1d0b8a3389",
+        "name": "Authentication flow",
+        "info": "",
+        "x": 170,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "d1b9982d705bb9ce",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "save_user",
+        "func": "global.set(\"email\", msg.payload.email);\nglobal.set(\"password\", msg.payload.password_1);",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "84d85185d3e98614",
+        "type": "ui_button",
+        "z": "442b1e1d0b8a3389",
+        "name": "To Log In",
+        "group": "d24ed554c9dee777",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "label": "To Log In",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 140,
+        "y": 460,
+        "wires": [
+            [
+                "7700d1d698a2aa42"
+            ]
+        ]
+    },
+    {
+        "id": "7700d1d698a2aa42",
+        "type": "change",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"tabs\":{\"show\":[\"Log in\"],\"hide\":[\"Get Password\", \"Personal\", \"Sign up\",\"Dashboard\"]},\"tab\":\"Log in\"}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 360,
+        "y": 460,
+        "wires": [
+            [
+                "193107c70a061be3"
+            ]
+        ]
+    },
+    {
+        "id": "193107c70a061be3",
+        "type": "ui_ui_control",
+        "z": "442b1e1d0b8a3389",
+        "name": "To Log In",
+        "events": "all",
+        "x": 580,
+        "y": 460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "baae3a5349580c67",
+        "type": "debug",
+        "z": "442b1e1d0b8a3389",
+        "name": "check_object",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "3fcbf18e4e637a62",
+        "type": "change",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Sign up completed. Please return to Login Page",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1520,
+        "y": 600,
+        "wires": [
+            [
+                "f535b94b8cad1e77"
+            ]
+        ]
+    },
+    {
+        "id": "f535b94b8cad1e77",
+        "type": "ui_toast",
+        "z": "442b1e1d0b8a3389",
+        "position": "dialog",
+        "displayTime": "3",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 1,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "",
+        "name": "Show complete",
+        "x": 1800,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b6dfbbad461ca6d6",
+        "type": "debug",
+        "z": "442b1e1d0b8a3389",
+        "name": "Check_new_user",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1150,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "bd56a91d0ba72dc9",
+        "type": "mongodb in",
+        "z": "442b1e1d0b8a3389",
+        "mongodb": "cde3ecd7caed36e2",
+        "name": "Get user",
+        "collection": "users",
+        "operation": "find",
+        "x": 400,
+        "y": 240,
+        "wires": [
+            [
+                "baae3a5349580c67",
+                "7a63a63e9929491f"
+            ]
+        ]
+    },
+    {
+        "id": "278c94e0a6cef308",
+        "type": "mongodb out",
+        "z": "442b1e1d0b8a3389",
+        "mongodb": "cde3ecd7caed36e2",
+        "name": "Save user",
+        "collection": "users",
+        "payonly": false,
+        "upsert": false,
+        "multi": false,
+        "operation": "store",
+        "x": 1820,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "72694f05117dff28",
+        "type": "mongodb in",
+        "z": "442b1e1d0b8a3389",
+        "mongodb": "cde3ecd7caed36e2",
+        "name": "Get user",
+        "collection": "users",
+        "operation": "find",
+        "x": 1080,
+        "y": 480,
+        "wires": [
+            [
+                "7f261af1324854ea"
+            ]
+        ]
+    },
+    {
+        "id": "925cecd19f9796b1",
+        "type": "switch",
+        "z": "442b1e1d0b8a3389",
+        "name": "check_valid",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Y",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "N",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1390,
+        "y": 500,
+        "wires": [
+            [
+                "7a3181aa20e6ff2b"
+            ],
+            [
+                "3fcbf18e4e637a62",
+                "e30db818b869771c"
+            ]
+        ]
+    },
+    {
+        "id": "7f261af1324854ea",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "authenticate",
+        "func": "var users = msg.payload;\n\nif (!Array.isArray(users) || users.length === 0) {\n    msg.payload = \"N\";   // user không tồn tại\n    return msg;\n}\n\nmsg.payload = \"Y\";       // user đã tồn tại\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1270,
+        "y": 460,
+        "wires": [
+            [
+                "925cecd19f9796b1"
+            ]
+        ]
+    },
+    {
+        "id": "e30db818b869771c",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "process_new_user",
+        "func": "msg = {\n    email: global.get(\"email\"),\n    password: global.get(\"password\")\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1630,
+        "y": 500,
+        "wires": [
+            [
+                "278c94e0a6cef308"
+            ]
+        ]
+    },
+    {
+        "id": "7a3181aa20e6ff2b",
+        "type": "change",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "The account is already exist. Please log in",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1520,
+        "y": 440,
+        "wires": [
+            [
+                "e39517998b785a52"
+            ]
+        ]
+    },
+    {
+        "id": "e39517998b785a52",
+        "type": "ui_toast",
+        "z": "442b1e1d0b8a3389",
+        "position": "dialog",
+        "displayTime": "3",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 1,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "",
+        "name": "Show dialog",
+        "x": 1730,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f3514504f86c00ac",
+        "type": "ui_button",
+        "z": "442b1e1d0b8a3389",
+        "name": "Get Password",
+        "group": "362c1159a3d28eb0",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Forgot password",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 160,
+        "y": 360,
+        "wires": [
+            [
+                "830aa76226ae8ae9"
+            ]
+        ]
+    },
+    {
+        "id": "830aa76226ae8ae9",
+        "type": "change",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{   \"tabs\": {     \"show\": [\"Get Password\", \"Personal\"],     \"hide\": [\"Log in\", \"Sign up\", \"Dashboard\"]   },   \"tab\": \"Get Password\" }",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 380,
+        "y": 360,
+        "wires": [
+            [
+                "a619289de1815246"
+            ]
+        ]
+    },
+    {
+        "id": "a619289de1815246",
+        "type": "ui_ui_control",
+        "z": "442b1e1d0b8a3389",
+        "name": "To Get Password",
+        "events": "all",
+        "x": 590,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4ddc8415d47c66fe",
+        "type": "ui_form",
+        "z": "442b1e1d0b8a3389",
+        "name": "Get Password",
+        "label": "Get Password",
+        "group": "3b2035224e6754be",
+        "order": 1,
+        "width": 6,
+        "height": "2",
+        "options": [
+            {
+                "label": "Email",
+                "value": "email",
+                "type": "text",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "email": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "",
+        "x": 160,
+        "y": 700,
+        "wires": [
+            [
+                "ebc63e9daeb665cf"
+            ]
+        ]
+    },
+    {
+        "id": "4e5131f3a58e1813",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Save user",
+        "func": "var users = msg.payload;\n\nif (!Array.isArray(users) || users.length === 0) {\n    msg.payload = \"Email không tồn tại\";\n    return msg;\n}\n\nvar user = users[0];\n\nmsg.to = user.email;\nmsg.topic = \"Your password\";\n\nmsg.payload =\n    \"Your account password is:\\n\" +\n    \"Password: \" + user.password + \"\\n\" +\n    \"Please log in again.\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 700,
+        "wires": [
+            [
+                "d9d66c5e6c8c206d",
+                "f02b20e77bc2ee98"
+            ]
+        ]
+    },
+    {
+        "id": "ebc63e9daeb665cf",
+        "type": "mongodb in",
+        "z": "442b1e1d0b8a3389",
+        "mongodb": "cde3ecd7caed36e2",
+        "name": "Get user",
+        "collection": "users",
+        "operation": "find",
+        "x": 320,
+        "y": 680,
+        "wires": [
+            [
+                "4e5131f3a58e1813"
+            ]
+        ]
+    },
+    {
+        "id": "d9d66c5e6c8c206d",
+        "type": "e-mail",
+        "z": "442b1e1d0b8a3389",
+        "server": "sandbox.smtp.mailtrap.io",
+        "port": "2525",
+        "secure": false,
+        "tls": true,
+        "name": "",
+        "dname": "Send email",
+        "x": 690,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "914bcc006cb6db23",
+        "type": "comment",
+        "z": "442b1e1d0b8a3389",
+        "name": "Get Password",
+        "info": "",
+        "x": 160,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "c9ef039ff029e78d",
+        "type": "mqtt in",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "topic": "sleep/data",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "a1936949a8b80869",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 160,
+        "y": 1500,
+        "wires": [
+            [
+                "72412020a2f4195f"
+            ]
+        ]
+    },
+    {
+        "id": "72412020a2f4195f",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Gate Sleep",
+        "func": "let active = global.get(\"sleep_active\");\nif (global.get(\"email\").length === 0) return null;\nif (!active) {\n    return null;\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 1500,
+        "wires": [
+            [
+                "c4dbb71ec75cbd20",
+                "d463e61af4317985"
+            ]
+        ]
+    },
+    {
+        "id": "c4dbb71ec75cbd20",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Input format",
+        "func": "let d = msg.payload;\n\nmsg.payload = {\n    hr: Number(d.hr),\n    ax: Number(d.ax),\n    ay: Number(d.ay),\n    az: Number(d.az)\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 530,
+        "y": 1500,
+        "wires": [
+            [
+                "f3b17363c1224112"
+            ]
+        ]
+    },
+    {
+        "id": "f3b17363c1224112",
+        "type": "http request",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://0.0.0.0:8000/push",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "Content-Type",
+                "keyValue": "",
+                "valueType": "application/json",
+                "valueValue": ""
+            }
+        ],
+        "x": 750,
+        "y": 1440,
+        "wires": [
+            [
+                "bab060f479f3d185"
+            ]
+        ]
+    },
+    {
+        "id": "bab060f479f3d185",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Add sleep stage",
+        "func": "let res = msg.payload;\n\nif (res.status === \"ok\") {\n    let arr = global.get(\"sleepStages\") || [];\n    arr.push(res.prediction);\n    global.set(\"sleepStages\", arr);\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 960,
+        "y": 1480,
+        "wires": [
+            [
+                "bacee52d5388cf6c"
+            ]
+        ]
+    },
+    {
+        "id": "bacee52d5388cf6c",
+        "type": "debug",
+        "z": "442b1e1d0b8a3389",
+        "name": "stage prediction",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1160,
+        "y": 1440,
+        "wires": []
+    },
+    {
+        "id": "83c6824f8aa9ec38",
+        "type": "mqtt in",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "topic": "sleep/button",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "a1936949a8b80869",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 190,
+        "y": 1580,
+        "wires": [
+            [
+                "b830e379f66990d2",
+                "336b303deff78e3e"
+            ]
+        ]
+    },
+    {
+        "id": "b830e379f66990d2",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Handle button Event",
+        "func": "let evt = msg.payload;\nif (global.get(\"email\").length === 0) return null;\nif (evt === \"start_sleep\") {\n    global.set(\"sleep_active\", true);\n    global.set(\"sleepStages\", []);\n    global.set(\"sleep_start_time\", Date.now());\n}\n\nif (evt === \"wake_up\") {\n    global.set(\"sleep_active\", false);\n    return msg;\n}\n\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 1620,
+        "wires": [
+            [
+                "ce8ff82edc1e5c47"
+            ]
+        ]
+    },
+    {
+        "id": "726105950e30d853",
+        "type": "http request",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://0.0.0.0:5000/predict",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "Content-Type",
+                "keyValue": "",
+                "valueType": "application/json",
+                "valueValue": ""
+            }
+        ],
+        "x": 970,
+        "y": 1580,
+        "wires": [
+            [
+                "6f9c4ff419d17c64",
+                "5d257186ede2e50a"
+            ]
+        ]
+    },
+    {
+        "id": "6f9c4ff419d17c64",
+        "type": "debug",
+        "z": "442b1e1d0b8a3389",
+        "name": "score prediction",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1220,
+        "y": 1520,
+        "wires": []
+    },
+    {
+        "id": "ce8ff82edc1e5c47",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Calculate Input",
+        "func": "let arr = global.get(\"sleepStages\") || [];\nconst EPOCH_MIN = 0.5;\n\n// sleep latency = số 0 liên tục đầu dãy\nlet latencyCount = 0;\nfor (let v of arr) {\n    if (v === 0) latencyCount++;\n    else break;\n}\nlet sleep_latency_minutes = latencyCount * EPOCH_MIN;\n\n// awake total\nlet awakeCount = arr.filter(v => v === 0).length;\nlet sleep_stage_awake = awakeCount * EPOCH_MIN;\n\n// final awake = số 0 liên tục cuối dãy\nlet finalAwakeCount = 0;\nfor (let i = arr.length - 1; i >= 0; i--) {\n    if (arr[i] === 0) finalAwakeCount++;\n    else break;\n}\nlet final_awake_minutes = finalAwakeCount * EPOCH_MIN;\n\n// WASO = awake − latency − final awake\nlet wake_after_sleep_onset_minutes =\n        sleep_stage_awake -\n        sleep_latency_minutes -\n        final_awake_minutes;\n\n// sleep stages\nlet deep = 0, light = 0, rem = 0;\nfor (let v of arr) {\n    if (v === 3) deep++;\n    else if (v === 1 || v === 2) light++;\n    else if (v === 4) rem++;\n}\n\nlet sleep_stage_deep = deep * EPOCH_MIN;\nlet sleep_stage_light = light * EPOCH_MIN;\nlet sleep_stage_rem = rem * EPOCH_MIN;\n\n// sleep efficiency = tổng sleep stage − latency − waso\nlet sleep_efficiency =\n    sleep_stage_deep +\n    sleep_stage_light +\n    sleep_stage_rem \n    + sleep_stage_awake -\n    sleep_latency_minutes -\n    wake_after_sleep_onset_minutes;\n\nmsg.payload = {\n    sleep_latency_minutes: Math.round(sleep_latency_minutes + 5),\n    wake_after_sleep_onset_minutes: Math.round(wake_after_sleep_onset_minutes),\n    sleep_efficiency: Math.round(sleep_efficiency),\n    sleep_stage_deep: Math.round(sleep_stage_deep),\n    sleep_stage_light: Math.round(sleep_stage_light),\n    sleep_stage_rem: Math.round(sleep_stage_rem),\n    sleep_stage_awake: Math.round(sleep_stage_awake)\n};\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 1620,
+        "wires": [
+            [
+                "726105950e30d853",
+                "d42c0ef2d3fdc359"
+            ]
+        ]
+    },
+    {
+        "id": "4cb79e662318b672",
+        "type": "comment",
+        "z": "442b1e1d0b8a3389",
+        "name": "Model",
+        "info": "",
+        "x": 150,
+        "y": 1420,
+        "wires": []
+    },
+    {
+        "id": "d42c0ef2d3fdc359",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Save total_time",
+        "func": "let dash = msg.payload || [];\nlet total_time = 0;\nif (dash.length !== 0){\n    total_time =\n    dash.sleep_stage_deep +\n    dash.sleep_stage_light +\n    dash.sleep_stage_rem +\n    dash.sleep_stage_awake;\n} \nglobal.set(\"total_time\", total_time);\nglobal.set(\"user_data\", dash);",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 1640,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5d257186ede2e50a",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Data format",
+        "func": "let data = global.get(\"user_data\");\ndata.total_time = global.get(\"total_time\");\ndata.prediction = msg.payload.sleep_score || 0;\nmsg = {\n    email: global.get(\"email\"),\n    data: data,\n    sleep_start_time: global.get(\"sleep_start_time\")\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1190,
+        "y": 1580,
+        "wires": [
+            [
+                "08922eb186abc83d"
+            ]
+        ]
+    },
+    {
+        "id": "08922eb186abc83d",
+        "type": "mongodb out",
+        "z": "442b1e1d0b8a3389",
+        "mongodb": "cde3ecd7caed36e2",
+        "name": "Save Data",
+        "collection": "user_data",
+        "payonly": false,
+        "upsert": false,
+        "multi": false,
+        "operation": "store",
+        "x": 1450,
+        "y": 1500,
+        "wires": []
+    },
+    {
+        "id": "b570e5298112fa19",
+        "type": "ui_button",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "group": "b04f047e279d7b75",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Stop Alarm",
+        "tooltip": "Turn off the alarm",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "true",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 210,
+        "y": 1200,
+        "wires": [
+            [
+                "ef0fc38b4ad6ad40"
+            ]
+        ]
+    },
+    {
+        "id": "11938e23430540ca",
+        "type": "mqtt out",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "topic": "sleep/buzzer",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "a1936949a8b80869",
+        "x": 670,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "720405692944e065",
+        "type": "comment",
+        "z": "442b1e1d0b8a3389",
+        "name": "Personal",
+        "info": "",
+        "x": 940,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "0fc213c6d15cc5a4",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Personal Info",
+        "func": "const email = global.get(\"email\");\nconst sleepActive = global.get(\"sleep_active\");\n\nconst now = new Date();\nconst localTime = now.toLocaleString(\"sv-VN\", {\n    timeZone: \"Asia/Ho_Chi_Minh\"\n});\n\nmsg.payload = {\n    email: email,\n    device_status: sleepActive ? \"ON\" : \"OFF\",\n    time: `${localTime}`\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1010,
+        "y": 980,
+        "wires": [
+            [
+                "89fd24185c371635",
+                "781f8f68b316cfe2",
+                "282614ac43ca187e"
+            ]
+        ]
+    },
+    {
+        "id": "89fd24185c371635",
+        "type": "ui_text",
+        "z": "442b1e1d0b8a3389",
+        "group": "565d1c4a5e3850b9",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "User information",
+        "format": "{{msg.payload.email}}",
+        "layout": "col-center",
+        "className": "",
+        "style": true,
+        "font": "Gill Sans,Geneva,sans-serif",
+        "fontSize": "22",
+        "color": "#e15151",
+        "x": 1280,
+        "y": 920,
+        "wires": []
+    },
+    {
+        "id": "781f8f68b316cfe2",
+        "type": "ui_text",
+        "z": "442b1e1d0b8a3389",
+        "group": "565d1c4a5e3850b9",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Device active",
+        "format": "{{msg.payload.device_status}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": true,
+        "font": "",
+        "fontSize": "20",
+        "color": "#fbf9f9",
+        "x": 1270,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "282614ac43ca187e",
+        "type": "ui_text",
+        "z": "442b1e1d0b8a3389",
+        "group": "565d1c4a5e3850b9",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Time",
+        "format": "{{msg.payload.time}}",
+        "layout": "row-center",
+        "className": "",
+        "style": true,
+        "font": "",
+        "fontSize": "15",
+        "color": "#5bd24b",
+        "x": 1250,
+        "y": 1080,
+        "wires": []
+    },
+    {
+        "id": "750cd5cfa18df6bf",
+        "type": "inject",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 950,
+        "y": 1100,
+        "wires": [
+            [
+                "0fc213c6d15cc5a4"
+            ]
+        ]
+    },
+    {
+        "id": "5c668588c8842a18",
+        "type": "change",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"tabs\":{\"show\":[\"Log in\"],\"hide\":[\"Get Password\", \"Personal\", \"Sign up\",\"Dashboard\"]},\"tab\":\"Log in\"}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 760,
+        "y": 700,
+        "wires": [
+            [
+                "620552e5d20f1bd2"
+            ]
+        ]
+    },
+    {
+        "id": "620552e5d20f1bd2",
+        "type": "ui_ui_control",
+        "z": "442b1e1d0b8a3389",
+        "name": "To Log In",
+        "events": "all",
+        "x": 980,
+        "y": 700,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f02b20e77bc2ee98",
+        "type": "change",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Email sent. Check and login again",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 660,
+        "y": 760,
+        "wires": [
+            [
+                "b7e9ba2cfcaac8c6"
+            ]
+        ]
+    },
+    {
+        "id": "b7e9ba2cfcaac8c6",
+        "type": "ui_toast",
+        "z": "442b1e1d0b8a3389",
+        "position": "dialog",
+        "displayTime": "3",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 1,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "",
+        "name": "Show dialog",
+        "x": 910,
+        "y": 760,
+        "wires": [
+            [
+                "5c668588c8842a18"
+            ]
+        ]
+    },
+    {
+        "id": "0282f98c1e477d5b",
+        "type": "ui_button",
+        "z": "442b1e1d0b8a3389",
+        "name": "To Log In",
+        "group": "3b2035224e6754be",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "label": "To Log In",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 160,
+        "y": 800,
+        "wires": [
+            [
+                "59d39281d39e2f93"
+            ]
+        ]
+    },
+    {
+        "id": "59d39281d39e2f93",
+        "type": "change",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"tabs\":{\"show\":[\"Log in\"],\"hide\":[\"Get Password\", \"Personal\", \"Sign up\",\"Dashboard\"]},\"tab\":\"Log in\"}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 380,
+        "y": 800,
+        "wires": [
+            [
+                "ac5241bf1f0b2386"
+            ]
+        ]
+    },
+    {
+        "id": "ac5241bf1f0b2386",
+        "type": "ui_ui_control",
+        "z": "442b1e1d0b8a3389",
+        "name": "To Log In",
+        "events": "all",
+        "x": 600,
+        "y": 800,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d463e61af4317985",
+        "type": "debug",
+        "z": "442b1e1d0b8a3389",
+        "name": "Received data",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 1560,
+        "wires": []
+    },
+    {
+        "id": "b4ea107ba213240c",
+        "type": "comment",
+        "z": "442b1e1d0b8a3389",
+        "name": "Dashboard",
+        "info": "",
+        "x": 1400,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "e22054fd31f105ea",
+        "type": "mongodb in",
+        "z": "442b1e1d0b8a3389",
+        "mongodb": "cde3ecd7caed36e2",
+        "name": "Get user data",
+        "collection": "user_data",
+        "operation": "find",
+        "x": 1520,
+        "y": 120,
+        "wires": [
+            [
+                "3b1d09586bac4141",
+                "a0650278350ed2b0",
+                "e2810bc4cd23a410",
+                "e0981b5a8459a5d4",
+                "b8f8e74bbc1d38ab"
+            ]
+        ]
+    },
+    {
+        "id": "3b1d09586bac4141",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Cloud to chart",
+        "func": "if (!Array.isArray(msg.payload)) {\n    msg.payload = [];\n    return msg;\n}\n\nlet points = msg.payload\n    .filter(d => d.sleep_start_time && d.data?.prediction !== undefined)\n    .sort((a, b) => a.sleep_start_time - b.sleep_start_time)\n    .map(d => ({\n        x: Number(d.sleep_start_time),          // timestamp (ms)\n        y: Number(d.data.prediction)            // sleep score\n    }));\n\nmsg.payload = [{\n    series: [\"Sleep Score\"],\n    data: [ points ],\n    labels: [\"\"]\n}];\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1740,
+        "y": 60,
+        "wires": [
+            [
+                "c16bce6b1d4c5673"
+            ]
+        ]
+    },
+    {
+        "id": "945267a1f177c578",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Query user data",
+        "func": "const userEmail = global.get(\"email\");\n\nmsg.payload = {\n    email: userEmail\n};\n\nmsg.sort = {\n    sleep_start_time: -1\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1420,
+        "y": 200,
+        "wires": [
+            [
+                "e22054fd31f105ea"
+            ]
+        ]
+    },
+    {
+        "id": "c16bce6b1d4c5673",
+        "type": "ui_chart",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "group": "feb4f7b6a248662d",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "label": "Sleep Score",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "D/M",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "720",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1910,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a0650278350ed2b0",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Cloud to text",
+        "func": "if (!Array.isArray(msg.payload) || msg.payload.length === 0) {\n    msg.payload = \"No data\";\n    return msg;\n}\n\nlet totalMinutes = 0;\nlet count = 0;\n\nmsg.payload.forEach(d => {\n    if (d.data?.total_time !== undefined) {\n        totalMinutes += Number(d.data.total_time);\n        count++;\n    }\n});\n\nif (count === 0) {\n    msg.payload = \"No data\";\n    return msg;\n}\n\nlet avgMinutes = totalMinutes / count;\nlet hours = Math.floor(avgMinutes / 60);\nlet minutes = Math.round(avgMinutes % 60);\n\nmsg.payload = `Avg sleep time: ${hours}h ${minutes}m`;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1750,
+        "y": 140,
+        "wires": [
+            [
+                "c0146ce81a01d9e6"
+            ]
+        ]
+    },
+    {
+        "id": "c0146ce81a01d9e6",
+        "type": "ui_text",
+        "z": "442b1e1d0b8a3389",
+        "group": "cc7ac5ba2f07a66b",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Average Sleep Time",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "className": "",
+        "style": true,
+        "font": "Verdana,Verdana,Geneva,sans-serif",
+        "fontSize": "25",
+        "color": "#08fd7e",
+        "x": 1980,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "5e2c2b71aeeb4122",
+        "type": "ui_gauge",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "group": "cc7ac5ba2f07a66b",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Average Sleep Score",
+        "label": "point",
+        "format": "{{msg.payload}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#b30000",
+            "#e6e600",
+            "#24f56d"
+        ],
+        "seg1": "40",
+        "seg2": "70",
+        "diff": false,
+        "className": "",
+        "x": 2020,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "e2810bc4cd23a410",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Cloud to gauge",
+        "func": "if (!Array.isArray(msg.payload) || msg.payload.length === 0) {\n    msg.payload = 0;\n    return msg;\n}\n\nlet sum = 0;\nlet count = 0;\n\nmsg.payload.forEach(d => {\n    if (d.data?.prediction !== undefined) {\n        sum += Number(d.data.prediction);\n        count++;\n    }\n});\n\nmsg.payload = count ? Math.round(sum / count) : 0;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1740,
+        "y": 220,
+        "wires": [
+            [
+                "5e2c2b71aeeb4122"
+            ]
+        ]
+    },
+    {
+        "id": "e0981b5a8459a5d4",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Avg sleep efficiency",
+        "func": "if (!Array.isArray(msg.payload) || msg.payload.length === 0) {\n    msg.payload = \"No data\";\n    return msg;\n}\n\nlet sumRatio = 0;\nlet count = 0;\n\nmsg.payload.forEach(d => {\n    const eff = Number(d.data?.sleep_efficiency);\n    const total = Number(d.data?.total_time);\n\n    if (eff > 0 && total > 0) {\n        sumRatio += eff / total;\n        count++;\n    }\n});\n\nif (count === 0) {\n    msg.payload = \"No data\";\n    return msg;\n}\n\nlet meanEfficiency = sumRatio / count;\n\nmsg.payload = `${(meanEfficiency * 100).toFixed(1)}%`;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1690,
+        "y": 280,
+        "wires": [
+            [
+                "30dfc4e347c3deb8"
+            ]
+        ]
+    },
+    {
+        "id": "30dfc4e347c3deb8",
+        "type": "ui_text",
+        "z": "442b1e1d0b8a3389",
+        "group": "cc7ac5ba2f07a66b",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Sleep efficiency: ",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "className": "",
+        "style": true,
+        "font": "",
+        "fontSize": "20",
+        "color": "#f24a4a",
+        "x": 1980,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "b8f8e74bbc1d38ab",
+        "type": "debug",
+        "z": "442b1e1d0b8a3389",
+        "name": "Check user data",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1620,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "336b303deff78e3e",
+        "type": "debug",
+        "z": "442b1e1d0b8a3389",
+        "name": "button active",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 310,
+        "y": 1660,
+        "wires": []
+    },
+    {
+        "id": "ef0fc38b4ad6ad40",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Turn off buzzer",
+        "func": "global.set(\"alarm_active\", false);\nglobal.set(\"alarm_time\", null);\n\nreturn {\n    topic: \"sleep/buzzer\",\n    payload: 0\n};",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 1260,
+        "wires": [
+            [
+                "11938e23430540ca"
+            ]
+        ]
+    },
+    {
+        "id": "ui_time_input",
+        "type": "ui_text_input",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "label": "Set timer",
+        "tooltip": "",
+        "group": "b04f047e279d7b75",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "time",
+        "delay": 300,
+        "topic": "save",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "msg",
+        "x": 200,
+        "y": 900,
+        "wires": [
+            [
+                "func_temp_save"
+            ]
+        ]
+    },
+    {
+        "id": "func_temp_save",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Draft",
+        "func": "global.set(\"temp_alarm_input\", msg.payload);\nreturn null;",
+        "outputs": 0,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "ui_btn_save",
+        "type": "ui_button",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "group": "b04f047e279d7b75",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Save",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-floppy-o",
+        "payload": "save",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 190,
+        "y": 980,
+        "wires": [
+            [
+                "func_commit_alarm"
+            ]
+        ]
+    },
+    {
+        "id": "func_commit_alarm",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Trigger",
+        "func": "const tempTs = global.get(\"temp_alarm_input\");\nif (!tempTs) return { payload: \"Didn't pick time!\" };\n\nconst d = new Date(tempTs);\nconst setH = d.getUTCHours();\nconst setM = d.getUTCMinutes();\n\nconst now = new Date();\nlet target = new Date();\n\n// Set alarm: ép giờ vào local time\ntarget.setHours(setH, setM, 0, 0);\n\nif (target.getTime() <= now.getTime()) {\n    target.setDate(target.getDate() + 1);\n}\n\nglobal.set(\"alarm_target\", target.getTime());\nglobal.set(\"alarm_active\", true);\n\nconst hh = String(setH).padStart(2, '0');\nconst mm = String(setM).padStart(2, '0');\nreturn {\n    payload: `${hh}:${mm}`\n};",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 980,
+        "wires": [
+            [
+                "ui_text_confirm"
+            ]
+        ]
+    },
+    {
+        "id": "ui_text_confirm",
+        "type": "ui_text",
+        "z": "442b1e1d0b8a3389",
+        "group": "b04f047e279d7b75",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Saved time",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#006400",
+        "x": 670,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "inject_loop",
+        "type": "inject",
+        "z": "442b1e1d0b8a3389",
+        "name": "1s Loop",
+        "props": [],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 220,
+        "y": 1080,
+        "wires": [
+            [
+                "func_countdown"
+            ]
+        ]
+    },
+    {
+        "id": "func_countdown",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "Check Time",
+        "func": "const target = global.get(\"alarm_target\");\nconst active = global.get(\"alarm_active\");\n\nif (!target || !active) {\n    return [{ payload: \"Waiting...\" }, null];\n}\n\nconst now = new Date().getTime();\nconst diff = target - now;\n \nif (diff <= 0) {\n    global.set(\"alarm_active\", false); \n    return [\n        { payload: \"Ringing!!!\" },\n        { payload: 1, topic: \"sleep/buzzer\" }\n    ];\n}\n\nconst totalSec = Math.floor(diff / 1000);\nconst h = Math.floor(totalSec / 3600);\nconst m = Math.floor((totalSec % 3600) / 60);\nconst s = totalSec % 60;\n\nreturn [\n    { payload: `Remaining: ${h}h ${m}m ${s}s` },\n    null\n];",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 1100,
+        "wires": [
+            [
+                "ui_text_countdown"
+            ],
+            [
+                "mqtt_out_buzzer",
+                "debug_trigger"
+            ]
+        ]
+    },
+    {
+        "id": "ui_text_countdown",
+        "type": "ui_text",
+        "z": "442b1e1d0b8a3389",
+        "group": "b04f047e279d7b75",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Countdown",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 20,
+        "color": "#1c4e80",
+        "x": 670,
+        "y": 1060,
+        "wires": []
+    },
+    {
+        "id": "mqtt_out_buzzer",
+        "type": "mqtt out",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "topic": "sleep/buzzer",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "a1936949a8b80869",
+        "x": 680,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "debug_trigger",
+        "type": "debug",
+        "z": "442b1e1d0b8a3389",
+        "name": "MQTT SENT",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "f90df50afa77bb98",
+        "type": "comment",
+        "z": "442b1e1d0b8a3389",
+        "name": "Clock Dashboard",
+        "info": "",
+        "x": 160,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "532e206d5ce7a045",
+        "type": "comment",
+        "z": "442b1e1d0b8a3389",
+        "name": "Log out",
+        "info": "",
+        "x": 970,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "a93d698087d75860",
+        "type": "ui_button",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "group": "565d1c4a5e3850b9",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Log Out",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "orange",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 980,
+        "y": 1200,
+        "wires": [
+            [
+                "39888cb58a6086ab",
+                "cce9a7ef48e4f836"
+            ]
+        ]
+    },
+    {
+        "id": "cce9a7ef48e4f836",
+        "type": "change",
+        "z": "442b1e1d0b8a3389",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{   \"tabs\": {     \"show\": [\"Log in\"],     \"hide\": [\"Get Password\", \"Personal\", \"Sign up\", \"Dashboard\"]   },   \"tab\": \"Log in\" }",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1200,
+        "y": 1220,
+        "wires": [
+            [
+                "bebedca7cccaa2cb"
+            ]
+        ]
+    },
+    {
+        "id": "39888cb58a6086ab",
+        "type": "function",
+        "z": "442b1e1d0b8a3389",
+        "name": "clear_current_user",
+        "func": "global.set(\"email\", \"\");\nglobal.set(\"password\", \"\");\nglobal.set(\"sleep_active\",false);\nglobal.set(\"sleepStages\", []);\nglobal.set(\"total_time\", 0);\nglobal.set(\"user_data\", null);\nglobal.set(\"sleep_start_time\", 0);\nglobal.set(\"alarm_time\", 0);\nglobal.set(\"alarm_active\", false);\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1210,
+        "y": 1180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "bebedca7cccaa2cb",
+        "type": "ui_ui_control",
+        "z": "442b1e1d0b8a3389",
+        "name": "To Authentication Flow",
+        "events": "all",
+        "x": 1500,
+        "y": 1220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "362c1159a3d28eb0",
+        "type": "ui_group",
+        "name": "Log In",
+        "tab": "b29405e5b75da953",
+        "order": 1,
+        "disp": false,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "d24ed554c9dee777",
+        "type": "ui_group",
+        "name": "Sign Up",
+        "tab": "091a38ab0b7264f2",
+        "order": 1,
+        "disp": false,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "cde3ecd7caed36e2",
+        "type": "mongodb",
+        "hostname": "yoursleep.9crujju.mongodb.net",
+        "topology": "dnscluster",
+        "connectOptions": "",
+        "port": 27017,
+        "db": "my_website",
+        "name": "My Database"
+    },
+    {
+        "id": "3b2035224e6754be",
+        "type": "ui_group",
+        "name": "Get Password",
+        "tab": "fb8c08fa1a716723",
+        "order": 1,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "a1936949a8b80869",
+        "type": "mqtt-broker",
+        "name": "Mosquitto",
+        "broker": "127.0.0.1",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "b04f047e279d7b75",
+        "type": "ui_group",
+        "name": "Schedulers",
+        "tab": "a4510fcd48107561",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "565d1c4a5e3850b9",
+        "type": "ui_group",
+        "name": "About",
+        "tab": "07ef0d2b197d30eb",
+        "order": 1,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "feb4f7b6a248662d",
+        "type": "ui_group",
+        "name": "Statistics",
+        "tab": "a4510fcd48107561",
+        "order": 2,
+        "disp": true,
+        "width": 12,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "cc7ac5ba2f07a66b",
+        "type": "ui_group",
+        "name": "Interactive",
+        "tab": "a4510fcd48107561",
+        "order": 3,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "b29405e5b75da953",
+        "type": "ui_tab",
+        "name": "Log in",
+        "icon": "dashboard",
+        "order": 2,
+        "disabled": false,
+        "hidden": true
+    },
+    {
+        "id": "091a38ab0b7264f2",
+        "type": "ui_tab",
+        "name": "Sign up",
+        "icon": "dashboard",
+        "order": 3,
+        "disabled": false,
+        "hidden": true
+    },
+    {
+        "id": "fb8c08fa1a716723",
+        "type": "ui_tab",
+        "name": "Get Password",
+        "icon": "dashboard",
+        "order": 4,
+        "disabled": false,
+        "hidden": true
+    },
+    {
+        "id": "a4510fcd48107561",
+        "type": "ui_tab",
+        "name": "Dashboard",
+        "icon": "dashboard",
+        "order": 5,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "07ef0d2b197d30eb",
+        "type": "ui_tab",
+        "name": "Personal",
+        "icon": "person",
+        "order": 7,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "52dceb48628bbc1c",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6",
+            "node-red-node-mongodb": "0.2.5",
+            "node-red-node-email": "1.9.0"
+        }
+    }
+]
